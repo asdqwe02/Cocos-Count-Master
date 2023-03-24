@@ -1,0 +1,54 @@
+{
+  "__version__": "3.0.6",
+  "game": {
+    "app_id": "694598662",
+    "name": "CountMaster_20230322043746",
+    "c_id": "0"
+  },
+  "appConfigMaps": [
+    {
+      "app_id": "UNKNOW",
+      "config_id": "304e4c"
+    },
+    {
+      "app_id": "694598661",
+      "config_id": "3f8ce8"
+    },
+    {
+      "app_id": "694598662",
+      "config_id": "64c4d1"
+    }
+  ],
+  "configs": [
+    {
+      "app_id": "UNKNOW",
+      "config_id": "304e4c",
+      "config_name": "Default",
+      "config_remarks": "",
+      "services": []
+    },
+    {
+      "app_id": "694598661",
+      "config_id": "3f8ce8",
+      "config_name": "Default",
+      "config_remarks": "",
+      "services": []
+    },
+    {
+      "app_id": "694598662",
+      "config_id": "64c4d1",
+      "config_name": "Default",
+      "config_remarks": "",
+      "services": [
+        {
+          "service_id": "235",
+          "enable": false,
+          "param": {
+            "app_id": "694598662",
+            "store_id": "H5"
+          }
+        }
+      ]
+    }
+  ]
+}

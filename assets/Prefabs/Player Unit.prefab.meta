@@ -1,0 +1,14 @@
+{
+  "ver": "1.1.43",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "43cd70b8-4d36-4b51-97ce-331c1456ce2c",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "syncNodeName": "Player Unit",
+    "persistent": true
+  }
+}
