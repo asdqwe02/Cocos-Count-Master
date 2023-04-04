@@ -1,6 +1,6 @@
-import { _decorator, Component, Node, Vec2, Vec3, CCFloat, Collider, ITriggerEvent, instantiate, CCObject, Prefab, random, randomRange, director, game, Event, Input, EventKeyboard, KeyCode, debug } from 'cc';
+import { _decorator, Component, Node, Vec2, Vec3, CCFloat, Collider, ITriggerEvent, instantiate, CCObject, Prefab, random, randomRange, director, game, Event, Input, EventKeyboard, KeyCode, debug, RichText } from 'cc';
 import { GameManager } from './GameManager';
-import { MultiplyPlateController } from './MultiplyPlateController';
+import { EquationType, MultiplyPlateController } from './MultiplyPlateController';
 import { PlayerUnitBehaviour } from './PlayerUnitBehaviour';
 const { ccclass, property } = _decorator;
 
@@ -12,6 +12,8 @@ export class PlayerController extends Component {
     public Speed: number = 1.0
     @property(CCFloat)
     public SideWaySpeed: number = 1.0
+    @property(RichText)
+    public UnitCounter: RichText = null
     @property(PlayerUnitBehaviour)
     playerUnits: PlayerUnitBehaviour[] = []
     // private static _instance: PlayerController = null
@@ -20,7 +22,7 @@ export class PlayerController extends Component {
         collider.on("onTriggerEnter", this.onTriggerEnter, this)
         this.node.on("multiplyPlate_interacted", this.onInteractMultiplyPlate, this)
         this.node.on(Input.EventType.KEY_DOWN, this.onKeyDown, this)
-
+        this.UnitCounter.string = this.playerUnits.length.toString()
     }
     onKeyDown(event: EventKeyboard) {
         console.log("key pressed")
@@ -35,12 +37,13 @@ export class PlayerController extends Component {
     }
     moveLeft() {
         this.node.translate(new Vec3(-this.SideWaySpeed, 0, 0).multiplyScalar(game.deltaTime));
+        // this.node.
     }
     moveRight() {
         this.node.translate(new Vec3(this.SideWaySpeed, 0, 0).multiplyScalar(game.deltaTime));
 
     }
-    onInteractMultiplyPlate(amount: number) {
+    onInteractMultiplyPlate(amount: number, type: EquationType) {
         // console.log(amount)
         this.spawnUnit(amount);
         // GameManager.instance.onSpawnNextGround()
@@ -55,17 +58,22 @@ export class PlayerController extends Component {
     public spawnUnit(amount: number): void {
         // console.log("call spawn unit on PlayerController")
         if (amount < 0) {
-            var amountToDestroy = this.playerUnits.length + amount > 0 ? -amount : this.playerUnits.length
+            var amountToDestroy = this.playerUnits.length + amount >= 0 ? -amount : this.playerUnits.length
             console.log("amount of player unit to destroy", amountToDestroy)
             for (let index = 0; index < amountToDestroy; index++) {
 
-                if (element !== undefined) {
-                    var element = this.playerUnits[index];
-                    this.playerUnits.splice(index, 1)
+                var element = this.playerUnits[index];
+                if (element !== undefined && element !== null) {
+                    // this.playerUnits.splice(index, 1)
                     element.node.destroy()
 
                 }
+                this.playerUnits.splice(index, 1)
+                // else {
+                // }
+
             }
+            this.UnitCounter.string = this.playerUnits.length.toString();
             return
         }
         for (let i = 0; i < amount; i++) {
@@ -74,7 +82,10 @@ export class PlayerController extends Component {
             this.node.addChild(prefabInstance)
             var position = new Vec3(randomRange(-3.0, 3.0), 0, randomRange(-3.0, 3.0));
             prefabInstance.setPosition(position)
+            prefabInstance.getComponent(PlayerUnitBehaviour).CenterNode = this.node
         }
+        this.UnitCounter.string = this.playerUnits.length.toString();
+
 
     }
     update(deltaTime: number) {

@@ -1,11 +1,13 @@
-import { _decorator, Component, Node, CCInteger, Collider, ITriggerEvent, random, randomRange, randomRangeInt, TerrainLayer, CCBoolean, Material, MeshRenderer, Enum, EAxisDirection, equals, Mesh } from 'cc';
+import { _decorator, Component, Node, CCInteger, Collider, ITriggerEvent, random, randomRange, randomRangeInt, TerrainLayer, CCBoolean, Material, MeshRenderer, Enum, EAxisDirection, equals, Mesh, RichText } from 'cc';
 import { MultiplyPlateParent } from './MultiplyPlateParent';
 import { PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
 
-enum EquationType {
+export enum EquationType {
     SUBTRACT,
     PLUS,
+    MULTIPLY,
+    DIVIDE
 }
 @ccclass('MultiplyPlateController')
 export class MultiplyPlateController extends Component {
@@ -18,9 +20,11 @@ export class MultiplyPlateController extends Component {
     public MultiplyPlateParent: MultiplyPlateParent = null
     @property(Material)
     plateMat: Material[] = []
-
+    @property(RichText)
+    plateEquationText: RichText = null
     @property({ type: Enum(EquationType) })
     equationType: EquationType = EquationType.PLUS
+    private _equationValue: number
     start() {
         let collider = this.node.getComponent(Collider)
         collider.on("onTriggerEnter", this.onTriggerEnter, this)
@@ -34,25 +38,30 @@ export class MultiplyPlateController extends Component {
         this.CanActivate = true
         this.equationType = this.getRandomEnumValue(EquationType);
         var plateMat = this.node.getComponent(MeshRenderer);
+        var equationSign = "";
         switch (this.equationType) {
             case EquationType.SUBTRACT:
+                equationSign = "-"
                 plateMat.setMaterial(this.plateMat[1], 0)
                 break;
             case EquationType.PLUS:
+                equationSign = "+"
                 plateMat.setMaterial(this.plateMat[0], 0)
                 break;
             default:
                 break;
         }
+        this._equationValue = randomRangeInt(this.minAmount, this.maxAmount)
+        this.plateEquationText.string = equationSign + this._equationValue
 
     }
     onTriggerEnter(event: ITriggerEvent): void {
         var playerNode = event.otherCollider.node.getComponent(PlayerController)
         if (playerNode && this.CanActivate) {
-            var increaseAmount = randomRangeInt(this.minAmount, this.maxAmount)
+            // var increaseAmount = randomRangeInt(this.minAmount, this.maxAmount)
             switch (this.equationType) {
                 case EquationType.SUBTRACT:
-                    increaseAmount = -increaseAmount;
+                    this._equationValue = -this._equationValue;
                     break
                 case EquationType.PLUS:
                     break;
@@ -60,7 +69,7 @@ export class MultiplyPlateController extends Component {
                     break;
 
             }
-            playerNode.node.emit("multiplyPlate_interacted", increaseAmount)
+            playerNode.node.emit("multiplyPlate_interacted", this._equationValue)
             this.MultiplyPlateParent.node.emit("multiplyPlate_interacted")
         }
     }
